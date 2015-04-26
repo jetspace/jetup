@@ -18,31 +18,31 @@ VERSION = @VERSION@
 CFLAGS = @CFLAGS@ -Wall
 LIBS = @LIBS@
 
-man_MANS = archup.1
+man_MANS = jetup.1
 
-all: archup-bin archup-man
+all: jetup-bin jetup-man
 
-archup-bin: archup.c
-	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" `pkg-config --cflags --libs gtk+-2.0` archup.c -o archup $(LIBS)
+jetup-bin: jetup.c
+	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" `pkg-config --cflags --libs gtk+-3.0` jetup.c -o jetup $(LIBS)
 
-archup-man: archup.1
-	gzip archup.1
+jetup-man: jetup.1
+	gzip jetup.1
 
 install:
-	install -Dm755 archup $(DESTDIR)/usr/bin/archup
-	install -Dm744 README $(DESTDIR)/usr/share/doc/archup/README
-	install -Dm744 INSTALL $(DESTDIR)/usr/share/doc/archup/INSTALL
-	install -Dm744 COPYING $(DESTDIR)/usr/share/doc/archup/COPYING
-	install -Dm744 VERSION $(DESTDIR)/usr/share/doc/archup/VERSION
-	install -Dm744 CHANGELOG $(DESTDIR)/usr/share/doc/archup/CHANGELOG
-	install -Dm744 cronhourly.example $(DESTDIR)/usr/share/doc/archup/cronhourly.example
-	install -Dm644 archup.1.gz $(DESTDIR)/usr/share/man/man1/archup.1.gz
+	install -Dm755 jetup $(DESTDIR)/usr/bin/jetup
+	install -Dm744 README $(DESTDIR)/usr/share/doc/jetup/README
+	install -Dm744 INSTALL $(DESTDIR)/usr/share/doc/jetup/INSTALL
+	install -Dm744 COPYING $(DESTDIR)/usr/share/doc/jetup/COPYING
+	install -Dm744 VERSION $(DESTDIR)/usr/share/doc/jetup/VERSION
+	install -Dm744 CHANGELOG $(DESTDIR)/usr/share/doc/jetup/CHANGELOG
+	install -Dm744 cronhourly.example $(DESTDIR)/usr/share/doc/jetup/cronhourly.example
+	install -Dm644 jetup.1.gz $(DESTDIR)/usr/share/man/man1/jetup.1.gz
 
 uninstall:
-	rm -f $(DESTDIR)/usr/bin/archup
-	rm -rf $(DESTDIR)/usr/share/doc/archup
-	rm -f $(DESTDIR)/usr/share/man/man1/archup.1.gz
+	rm -f $(DESTDIR)/usr/bin/jetup
+	rm -rf $(DESTDIR)/usr/share/doc/jetup
+	rm -f $(DESTDIR)/usr/share/man/man1/jetup.1.gz
 
 distclean:
-	rm -rf archup autoscan.log autom4te.cache Makefile configure.scan configure config.*
-	gunzip archup.1.gz
+	rm -rf jetup autoscan.log autom4te.cache Makefile configure.scan configure config.*
+	gunzip jetup.1.gz

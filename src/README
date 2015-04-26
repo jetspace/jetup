@@ -1,4 +1,5 @@
 # Copyright 2010 Rorschach <r0rschach@lavabit.com>
+# Copyright 2015 Marius Messerschmidt <marius.messerschmidt@googlemail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,12 +18,5 @@ archup (http://www.nongnu.org/archup/) is a small C application which informs th
 
 archup uses GTk+ and libnotify to show a desktop notification if updates are available. It follows the unix-philosophy of "just doing one thing, but doing  it  well".  It just notifies about new updates but the packagedatabase has to be updated by the user (better said a cronjob). With a cronjob archup can be used to regulary check for new updates and get a desktop notification if there are some.
 
-
-Bugs
-
-Please report bugs in the bugtracker: https://savannah.nongnu.org/bugs/?func=additem&group=archup . Thank you!
-
-
-Contact
-
-You can contact me with r0rschach@lavabit.com (PGP: 0xD6DEB90A).
+Please note that this is JetUp, a modified version of Archup, so please do not report any bugs to the 
+original Bugtracker or the original author!

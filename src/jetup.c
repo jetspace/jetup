@@ -1,6 +1,7 @@
 /* 
 Copyright 2010 Rorschach <r0rschach@lavabit.com>,
-2011 Andrew Kravchuk <awkravchuk@gmail.com>
+2011 Andrew Kravchuk <awkravchuk@gmail.com>,
+2015 Marius Messerschmidt <marius.messerschmidt@googlemail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <ctype.h>
 #include <unistd.h>
 
-#define VERSION_NUMBER 1.4
+#define VERSION_NUMBER 1.5
 
 /* Prints the help. */
 int print_help(char *name)
@@ -43,6 +44,7 @@ int print_help(char *name)
         printf("                                      !!You should change this if root is executing archup!!\n");
 	printf("          --urgency|-u [value]        Set the libnotify urgency-level. Possible values are: low, normal and critical.\n");
         printf("                                      The default value is normal. With changing this value you can change the color of the notification.\n");
+	printf("	  --update-first| -U	      Update the Package lists first. Default is false, you need to be root to use this option.\n");
 	printf("          --help                      Prints this help.\n");
 	printf("          --version                   Shows the version.\n");
 	printf("\nMore informations can be found in the manpage.\n");
@@ -53,7 +55,7 @@ int print_help(char *name)
 int print_version()
 {
         printf("archup %1.1f\n",VERSION_NUMBER);
-	printf("Copyright 2010 Rorschach <r0rschach@lavabit.com>,\n2011 Andrew Kravchuk <awkravchuk@gmail.com>\n");
+	printf("Copyright 2010 Rorschach <r0rschach@lavabit.com>,\n2011 Andrew Kravchuk <awkravchuk@gmail.com>, 2015 Marius Messerschmidt <marius.messerschmidt@googlemail.com>\n");
         printf("License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.\n");
         printf("This is free software: you are free to change and redistribute it.\n");
         printf("There is NO WARRANTY, to the extent permitted by law.\n");
@@ -70,11 +72,14 @@ int main(int argc, char **argv)
 	   After this time the desktop notification disappears */
 	int timeout = 3600*1000;
 	/* Restricts the number of packages which should be included in the desktop notification.*/
-	int max_number_out = 30;
+	/* In my opinion, more than 5 updates looks a bit complicated ;-) */
+	int max_number_out = 5;
 	/* Sets the urgency-level to normal. */
 	urgency = NOTIFY_URGENCY_NORMAL;
 	/* The default command to get a list of packages to update. */
 	char *command = "/usr/bin/pacman -Qu";
+	/* command to update package lists */
+	char *list_update = "/usr/bin/pacman -Sy";
 	/* The default icon to show: none */
 	gchar *icon = NULL;
 
@@ -106,6 +111,10 @@ int main(int argc, char **argv)
                         {
                                 max_number_out = atoi(argv[i+1]);
                         }
+                }
+		else if  ( strcmp(argv[i],"--update-first") == 0 ||  strcmp(argv[i],"-U") == 0 )
+                {
+                        system(list_update);
                 }
                 else if  ( strcmp(argv[i],"--urgency") == 0 ||  strcmp(argv[i],"-u") == 0 )
                 {
@@ -154,14 +163,12 @@ int main(int argc, char **argv)
 	}
 
 	/* Those are needed by libnotify. */
-	char *name = "arch_update_check";
+	char *name = "jetspace_update_check";
 	char *category = "update";
         NotifyNotification *my_notify;
         GError *error = NULL;
 
-        /* Those are needed for the output. */
-	char *output_string=malloc(23); 
-	sprintf(output_string,"There are updates for:\n");
+        /* This is needed for the output. */
 	bool got_updates = FALSE;
 
 	/* Those are needed for getting the list of updates. */
@@ -176,13 +183,17 @@ int main(int argc, char **argv)
 	   and allocate dynamically more memory for our output. */  
         pac_out = popen(command,"r");
 
+	char *output_string = malloc(1);
+
 	i = 0;
 	while (fgets(line,BUFSIZ,pac_out)) 
 	{
 		/* We leave the loop if we have more updates than we want to show in the notification. */
 		if (i >= max_number_out)
 		{
-			break;
+			i++;
+			continue; //still count the updates
+				
 		}
 		i++;
 
@@ -193,12 +204,19 @@ int main(int argc, char **argv)
 		/* We allocate that much more memory+2 bytes for the "- "+1 byte as delimiter. */
 		output_string = (char *)realloc(output_string,strlen(output_string)+1+llen+2);
 		/* We add the line to the output string. */
-		strncat(output_string,"- ",2);
+		strncat(output_string,"  - ",4); /* '  - ' looks better then '- ' */
 		strncat(output_string,line,llen);
 	}
 
 	/* We close the popen stream if we don't need it anymore. */
 	pclose(pac_out);
+
+	if(i > max_number_out)
+	{
+		output_string = (char *) realloc(output_string, strlen(output_string) + 4);
+		strncat(output_string, "...\n", 4);
+		puts(output_string);
+	}
 
 	/* If we got updates we are showing them in a notification */
 	if (got_updates == TRUE)
@@ -211,7 +229,9 @@ int main(int argc, char **argv)
 			output_string[strlen(output_string)-1] = '\0';
 		}
 		/* Constructs the notification. */
-		my_notify = notify_notification_new("New updates for Archlinux available!",output_string,icon);
+		char header[31]; /* there should not be more than 999.999 updates */
+		snprintf(header, 31, "There are %d new Updates:", i); 
+		my_notify = notify_notification_new(header,output_string,icon);
 		/* Sets the timeout until the notification disappears. */
 		notify_notification_set_timeout(my_notify,timeout);
 		/* We set the category.*/

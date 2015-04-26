@@ -1,3 +1,7 @@
+jetup-1.5
+	* added counter (like X new updates)
+	* visual changes
+	* cmdline option --update-first|-U added, will update the package lists
 archup-1.4
         * added --icon|-p flag to show an icon in the notification
 archup-1.3 (03/04/2010)
