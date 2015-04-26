@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=JetSpaceUpdater
+Exec=jetup
+OnlyShowIn=GNOME;
+NoDisplay=true
+X-Ubuntu-Gettext-Domain=jetspaceupdater

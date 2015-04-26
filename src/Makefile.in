@@ -37,6 +37,7 @@ install:
 	install -Dm744 CHANGELOG $(DESTDIR)/usr/share/doc/jetup/CHANGELOG
 	install -Dm744 cronhourly.example $(DESTDIR)/usr/share/doc/jetup/cronhourly.example
 	install -Dm644 jetup.1.gz $(DESTDIR)/usr/share/man/man1/jetup.1.gz
+	install -Dm755 jetup.desktop $(DESTDIR)/etc/xdg/autostart/jetup.desktop
 
 uninstall:
 	rm -f $(DESTDIR)/usr/bin/jetup
