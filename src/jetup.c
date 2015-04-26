@@ -18,13 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <libnotify/notify.h>
+#include <gtk/gtk.h> /* Needed for main loop */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
 
-#define VERSION_NUMBER 1.5
+#define VERSION_NUMBER 1.6
+
+#define UPDATE_CMD "gnome-software --mode=updates &"
 
 /* Prints the help. */
 int print_help(char *name)
@@ -44,7 +47,8 @@ int print_help(char *name)
         printf("                                      !!You should change this if root is executing archup!!\n");
 	printf("          --urgency|-u [value]        Set the libnotify urgency-level. Possible values are: low, normal and critical.\n");
         printf("                                      The default value is normal. With changing this value you can change the color of the notification.\n");
-	printf("	  --update-first| -U	      Update the Package lists first. Default is false, you need to be root to use this option.\n");
+	printf("	  --update| -U	      	      Update the Package lists. Default is false, you need to be root to use this option.\n");
+	printf(" 				      Please note, no notification will be send by using this option \n");
 	printf("          --help                      Prints this help.\n");
 	printf("          --version                   Shows the version.\n");
 	printf("\nMore informations can be found in the manpage.\n");
@@ -60,6 +64,19 @@ int print_version()
         printf("This is free software: you are free to change and redistribute it.\n");
         printf("There is NO WARRANTY, to the extent permitted by law.\n");
         exit(0);
+}
+
+/* will be called when user clicks install button, should open gnome-software */
+void open_software(NotifyNotification *n, gchar *action, gpointer data)
+{
+	system(UPDATE_CMD);
+	gtk_main_quit();
+}
+
+/* will be called when the user closes the notifications, without */
+void closed(gpointer p, gpointer q, gpointer r)
+{
+	gtk_main_quit();
 }
 
 int main(int argc, char **argv)
@@ -81,7 +98,7 @@ int main(int argc, char **argv)
 	/* command to update package lists */
 	char *list_update = "/usr/bin/pacman -Sy";
 	/* The default icon to show: none */
-	gchar *icon = NULL;
+	gchar *icon = "software-update-available";
 
 	/* We parse the commandline options. */
 	int i;
@@ -163,7 +180,7 @@ int main(int argc, char **argv)
 	}
 
 	/* Those are needed by libnotify. */
-	char *name = "jetspace_update_check";
+	char *name = "JetSpace Update Tool";
 	char *category = "update";
         NotifyNotification *my_notify;
         GError *error = NULL;
@@ -221,8 +238,9 @@ int main(int argc, char **argv)
 	/* If we got updates we are showing them in a notification */
 	if (got_updates == TRUE)
 	{
-		/* Initiates the libnotify. */	
+		/* Initiates the libnotify and GTK. */	
 		notify_init(name);
+		gtk_init(&argc, &argv);
 		/* Removes the last newlinefeed of the output_string, if the last sign is a newlinefeed. */
 		if ( output_string[strlen(output_string)-1] == '\n' )
 		{
@@ -238,8 +256,12 @@ int main(int argc, char **argv)
 		notify_notification_set_category(my_notify,category);
 		/* We set the urgency, which can be changed with a commandline option */
 		notify_notification_set_urgency (my_notify,urgency);
+		/* add callback */
+		notify_notification_add_action(my_notify, "InstallUpdates", "Install Updates", (NotifyActionCallback) open_software, NULL, NULL);
+		g_signal_connect(G_OBJECT(my_notify), "closed", G_CALLBACK(closed), NULL);
 		/* We finally show the notification, */	
 		notify_notification_show(my_notify,&error);
+		gtk_main();
 		/* and deinitialize the libnotify afterwards. */
 		notify_uninit();
 		/* Should be safe now */

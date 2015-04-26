@@ -1,3 +1,7 @@
+jetup-1.6
+	* added default icon (software-update-available)
+	* added callbacks and actions (close, install updates)
+	* improved help output
 jetup-1.5
 	* added counter (like X new updates)
 	* visual changes
