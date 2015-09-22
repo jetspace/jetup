@@ -1,4 +1,4 @@
-/* 
+/*
 Copyright 2010 Rorschach <r0rschach@lavabit.com>,
 2011 Andrew Kravchuk <awkravchuk@gmail.com>,
 2015 Marius Messerschmidt <marius.messerschmidt@googlemail.com>
@@ -14,7 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <libnotify/notify.h>
@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define VERSION_NUMBER 1.6
 
-#define UPDATE_CMD "gnome-software --mode=updates &"
+#define UPDATE_CMD "logistics --gui-updates &"
 
 /* Prints the help. */
 int print_help(char *name)
@@ -107,7 +107,7 @@ int main(int argc, char **argv)
 		if ( strcmp(argv[i],"--help") == 0 )
 		{
 			print_help(argv[0]);
-		} 
+		}
 		else if ( strcmp(argv[i],"--version") == 0 )
 		{
 			print_version();
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
                            value is a digit, we take this as new value */
 			if ( (argc-1 != i) && isdigit(*argv[i+1]) )
 			{
-				timeout = atoi(argv[i+1])*1000;	
+				timeout = atoi(argv[i+1])*1000;
 			}
 		}
                 else if  ( strcmp(argv[i],"--maxentries") == 0 ||  strcmp(argv[i],"-m") == 0 )
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 				else if ( strcmp(argv[i+1],"normal") == 0 )
                         	{
                                 	urgency=NOTIFY_URGENCY_NORMAL;
-                                }        
+                                }
 				else if ( strcmp(argv[i+1],"critical") == 0 )
                                 {
                                         urgency=NOTIFY_URGENCY_CRITICAL;
@@ -193,24 +193,24 @@ int main(int argc, char **argv)
 	int llen = 0;
 	char line[BUFSIZ];
 
- 
+
 	/* We get stdout of pacman -Qu into the pac_out stream.
-	   Remember we can't use fseek(stream,0,SEEK_END) with 
+	   Remember we can't use fseek(stream,0,SEEK_END) with
 	   popen-streams, thus we are reading BUFSIZ sized lines
-	   and allocate dynamically more memory for our output. */  
+	   and allocate dynamically more memory for our output. */
         pac_out = popen(command,"r");
 
 	char *output_string = malloc(1);
 
 	i = 0;
-	while (fgets(line,BUFSIZ,pac_out)) 
+	while (fgets(line,BUFSIZ,pac_out))
 	{
 		/* We leave the loop if we have more updates than we want to show in the notification. */
 		if (i >= max_number_out)
 		{
 			i++;
 			continue; //still count the updates
-				
+
 		}
 		i++;
 
@@ -238,7 +238,7 @@ int main(int argc, char **argv)
 	/* If we got updates we are showing them in a notification */
 	if (got_updates == TRUE)
 	{
-		/* Initiates the libnotify and GTK. */	
+		/* Initiates the libnotify and GTK. */
 		notify_init(name);
 		gtk_init(&argc, &argv);
 		/* Removes the last newlinefeed of the output_string, if the last sign is a newlinefeed. */
@@ -248,7 +248,7 @@ int main(int argc, char **argv)
 		}
 		/* Constructs the notification. */
 		char header[31]; /* there should not be more than 999.999 updates */
-		snprintf(header, 31, "There are %d new Updates:", i); 
+		snprintf(header, 31, "There are %d new Updates:", i);
 		my_notify = notify_notification_new(header,output_string,icon);
 		/* Sets the timeout until the notification disappears. */
 		notify_notification_set_timeout(my_notify,timeout);
@@ -259,7 +259,7 @@ int main(int argc, char **argv)
 		/* add callback */
 		notify_notification_add_action(my_notify, "InstallUpdates", "Install Updates", (NotifyActionCallback) open_software, NULL, NULL);
 		g_signal_connect(G_OBJECT(my_notify), "closed", G_CALLBACK(closed), NULL);
-		/* We finally show the notification, */	
+		/* We finally show the notification, */
 		notify_notification_show(my_notify,&error);
 		gtk_main();
 		/* and deinitialize the libnotify afterwards. */

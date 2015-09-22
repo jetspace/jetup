@@ -1,12 +1,12 @@
-.TH "archup" "1" "MARCH 2010" "Rorschach <r0rschach@lavabit.com>" ""
+.TH "jetup" "1" "MARCH 2010" "Rorschach <r0rschach@lavabit.com>" ""
 .SH "NAME"
-archup \- lightweight pacman update notifier
+jetup \- lightweight pacman update notifier
 .SH "SYNOPSIS"
-\fIarchup\fR [options]
+\fIjetup\fR [options]
 .SH "DESCRIPTION"
-archup is a small C application which informs the user when system\-updates for Archlinux are available. It's licenced under the GPLv3. In contrast to other update notifiers archup is intended to be lightweight and just do what it should, notify about possible updates.
+jetup is a small C application which informs the user when system\-updates for Archlinux are available. It's licenced under the GPLv3. In contrast to other update notifiers jetup is intended to be lightweight and just do what it should, notify about possible updates.
 
-archup uses GTk+ and libnotify to show a desktop notification if updates are available. It follows the unix-philosophy of "just doing one thing, but doing it well". It just notifies about new updates but the packagedatabase has to be updated by the user (better said a cronjob). With a cronjob archup can be used to regulary check for new updates and get a desktop notification if there are some.
+jetup uses GTk+ and libnotify to show a desktop notification if updates are available. It follows the unix-philosophy of "just doing one thing, but doing it well". It just notifies about new updates but the packagedatabase has to be updated by the user (better said a cronjob). With a cronjob jetup can be used to regulary check for new updates and get a desktop notification if there are some.
 .SH "OPTIONS"
           --command|-c [value]        Set the command which gives out the list of updates.
                                       The default is /usr/bin/pacman -Qu
@@ -17,39 +17,39 @@ archup uses GTk+ and libnotify to show a desktop notification if updates are ava
           --timeout|-t [value]        Set the timeout after which the notification disappers in seconds.
                                       The default value is 3600 seconds, which is 1 hour.
           --uid|-i [value]            Set the uid of the process.
-                                      The default is to keep the uid of the user who started archup.
-                                      !!You should change this if root is executing archup!!
+                                      The default is to keep the uid of the user who started jetup.
+                                      !!You should change this if root is executing jetup!!
           --urgency|-u [value]        Set the libnotify urgency-level. Possible values are: low, normal and critical.
                                       The default value is normal. With changing this value you can change the color of the notification.
 	  --update|-U                 Updates the package lists, don't disaply notifications, must be root!
           --help                      Prints this help.
           --version                   Shows the version.
 .SH "CONFIGURATION"
-archup can simply be invoked by executing it from the commandline. But you surely want to automate this task and let archup continouisly be run with a cronjob.
+jetup can simply be invoked by executing it from the commandline. But you surely want to automate this task and let jetup continouisly be run with a cronjob.
 
 \fIHourly\fR
 
-The most simple setup is for a single user system where you want to check once an hour for updates. In this case just copy the /usr/share/doc/archup/cronhourly.example to /etc/cron.hourly/archup.sh
+The most simple setup is for a single user system where you want to check once an hour for updates. In this case just copy the /usr/share/doc/jetup/cronhourly.example to /etc/cron.hourly/jetup.sh
 .PP
-          $ sudo cp /usr/share/doc/archup/cronhourly.example /etc/cron.hourly/archup.sh
+          $ sudo cp /usr/share/doc/jetup/cronhourly.example /etc/cron.hourly/jetup.sh
 .PP
 and make it executable with
 .PP
-          $ sudo chmod 755 /etc/cron.hourly/archup.sh
-.PP 
+          $ sudo chmod 755 /etc/cron.hourly/jetup.sh
+.PP
 Finally open this file with a texteditor of your choice and change the username of the arch_user value with your username.
 
-Now every hour your package database will get updated and after that archup will be executed. If there are updates archup shows a desktop notifiaction, if there are no updates nothing will happen. The desktop notification will automatically disappear after 60min or if you simply click on it.
+Now every hour your package database will get updated and after that jetup will be executed. If there are updates jetup shows a desktop notifiaction, if there are no updates nothing will happen. The desktop notification will automatically disappear after 60min or if you simply click on it.
 
 \fIother Intervals\fR
 
-If you want to execute archup at other intervals than hourly you are free to do so simply by setting up a custom cronjob (read manpage of crond for more on this).
+If you want to execute jetup at other intervals than hourly you are free to do so simply by setting up a custom cronjob (read manpage of crond for more on this).
 
 Some hints on this:
- * you can adjust the timeout value, before the notification will disappear with the --timeout option of archup
- * you should take care that the packagedatabase gets updated by executing /usr/bin/pacman -Sy before archup gets executed
+ * you can adjust the timeout value, before the notification will disappear with the --timeout option of jetup
+ * you should take care that the packagedatabase gets updated by executing /usr/bin/pacman -Sy before jetup gets executed
  * if you wanna start a graphical application from a cronjob you propably have to set the DISPLAY and XAUTHORITY values
-The best is taking a look at /usr/share/doc/archup/cronhourly.example and get your inspiration there.
+The best is taking a look at /usr/share/doc/jetup/cronhourly.example and get your inspiration there.
 
 .SH "AUTHOR"
 Written by Rorschach.
@@ -69,4 +69,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
